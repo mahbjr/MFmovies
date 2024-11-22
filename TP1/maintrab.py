@@ -47,11 +47,13 @@ def read_root():
 #f2
 @app.get("/filmes/", response_model=List[Filme])
 def listar_filmes():
+    carregar_filmes_csv()
     return filmes
 
 #f3
 @app.get("/filmes/{titulo}", response_model=Filme)
 def obter_filme(titulo: str):
+    carregar_filmes_csv()
     for filme in filmes:
         if filme.titulo == titulo:
             return filme
