@@ -1,0 +1,11 @@
+Divisão de Tarefas
+
+Marcelo:
+- Configuração do ambiente de desenvolvimento
+- Criação das funções auxiliares
+- Funcionalidades: f5, f6
+- Revisão e testes de todas as Funcionalidades
+
+Fernando:
+- Criação das funções auxiliares
+- Funcionalidades: f1, f2, f3, f4

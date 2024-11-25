@@ -106,6 +106,8 @@ def contar_filmes():
 #f5
 @app.get("/compactar")
 def compactar_csv():
+    if not Path(CSV_FILE).exists():
+        raise HTTPException(status_code=404, detail="Arquivo CSV não encontrado.")
     zip_filename = CSV_FILE.replace(".csv", ".zip")
     with zipfile.ZipFile(zip_filename, "w") as zipf:
         zipf.write(CSV_FILE)
@@ -114,6 +116,8 @@ def compactar_csv():
 #f6
 @app.get("/hash")
 def calcular_hash_csv():
+    if not Path(CSV_FILE).exists():
+        raise HTTPException(status_code=404, detail="Arquivo CSV não encontrado.")
     with open(CSV_FILE, mode="rb") as file:
         conteudo = file.read()
     sha256_hash = hashlib.sha256(conteudo).hexdigest()
