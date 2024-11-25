@@ -24,7 +24,17 @@ def carregar_filmes_csv():
     if Path(CSV_FILE).exists():
         with open(CSV_FILE, mode="r", encoding="utf-8") as file:
             reader = csv.DictReader(file)
-            return [Filme(**row) for row in reader]
+            filmes = []
+            for row in reader:
+                filme = Filme(
+                        titulo=row["titulo"],
+                        diretor=row["diretor"],
+                        ano_lancamento=int(row["ano_lancamento"]),
+                        sinopse=row["sinopse"],
+                        duracao=int(row["duracao"])
+                    )
+                filmes.append(filme)
+            return filmes
     return []
 
 # f1
@@ -33,7 +43,7 @@ def salvar_filmes_csv():
         writer = csv.DictWriter(file, fieldnames=["titulo", "diretor", "ano_lancamento", "sinopse", "duracao"])
         writer.writeheader()
         for filme in filmes:
-            writer.writerow(filme.dict()) #Dá uma olhada melhor
+            writer.writerow(filme.model_dump())
 
 filmes = carregar_filmes_csv()
 
@@ -44,13 +54,13 @@ def read_root():
 #f2
 @app.get("/filmes/", response_model=List[Filme])
 def listar_filmes():
-    carregar_filmes_csv()
+    filmes = carregar_filmes_csv()
     return filmes
 
 #f3
 @app.get("/filmes/{titulo}", response_model=Filme)
 def obter_filme(titulo: str):
-    carregar_filmes_csv()
+    filmes = carregar_filmes_csv()
     for filme in filmes:
         if filme.titulo == titulo:
             return filme
@@ -59,8 +69,9 @@ def obter_filme(titulo: str):
 #f1 f3
 @app.post("/filmes/", response_model=Filme, status_code=HTTPStatus.CREATED)
 def adicionar_filme(filme: Filme):
-    if any(f.titulo == filme.titulo for f in filmes):
-        raise HTTPException(status_code=HTTPStatus.BAD_REQUEST, detail="Filme com este título já existe.")
+    for f in filmes:
+        if f.titulo == filme.titulo:
+            raise HTTPException(status_code=HTTPStatus.BAD_REQUEST, detail="Filme com este título já existe.")
     filmes.append(filme)
     salvar_filmes_csv()
     return filme
@@ -68,7 +79,7 @@ def adicionar_filme(filme: Filme):
 #f3
 @app.put("/filmes/{titulo}", response_model=Filme)
 def atualizar_filme(titulo: str, filme_atualizado: Filme):
-    carregar_filmes_csv()
+    filmes = carregar_filmes_csv()
     for indice, filme_atual in enumerate(filmes):
         if filme_atual.titulo == titulo:
             filmes[indice] = filme_atualizado
@@ -78,7 +89,7 @@ def atualizar_filme(titulo: str, filme_atualizado: Filme):
 
 @app.delete("/filmes/{titulo}")
 def remover_filme(titulo: str):
-    carregar_filmes_csv()
+    filmes = carregar_filmes_csv()
     for filme in filmes:
         if filme.titulo == titulo:
             filmes.remove(filme)
@@ -89,7 +100,7 @@ def remover_filme(titulo: str):
 #f4
 @app.get("/contar")
 def contar_filmes():
-    carregar_filmes_csv()
+    filmes = carregar_filmes_csv()
     return {"quantidade": len(filmes)}
 
 #f5
