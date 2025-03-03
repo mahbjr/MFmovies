@@ -49,7 +49,7 @@ filmes = carregar_filmes_csv()
 
 @app.get("/")
 def read_root():
-    return {"msg": "Bem-vindo à MFmovies!"}
+    return {"msg": "Bem-vindo à MFmovies!!"}
 
 #f2
 @app.get("/filmes/", response_model=List[Filme])
